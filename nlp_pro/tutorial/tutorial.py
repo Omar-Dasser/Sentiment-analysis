@@ -13,6 +13,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
+from textblob import Word
 
 
 data_path = r'C:\Users\OmarDASSER\Desktop\nlp_pro\dataset\text_emotion.csv'
@@ -36,37 +37,36 @@ data = data.drop(data[data.sentiment == 'neutral'].index)
 data = data.drop(data[data.sentiment == 'worry'].index)
 
 # print(data)
-#Making all letters lowercase
+#Rendre tous les charactère en miniscule
 data['content'] = data['content'].apply(lambda x: " ".join(x.lower() for x in x.split()))
 
-#Removing Punctuation, Symbols
+#remplacer les signes de ponctuation(pattern[^\w\s]) en des espaces 
 data['content'] = data['content'].str.replace('[^\w\s]',' ')
 
-#Removing Stop Words using NLTK
+#Supprimer les stop words en utilisant les données de NLTK
 
 stop = stopwords.words('english')
 data['content'] = data['content'].apply(lambda x: " ".join(x for x in x.split() if x not in stop))
 
 #Lemmatisation
-from textblob import Word
+
 data['content'] = data['content'].apply(lambda x: " ".join([Word(word).lemmatize() for word in x.split()]))
 
-#Correcting Letter Repetitions
-import re
+#Corriger les répétitions
+
 def de_repeat(text):
     pattern = re.compile(r"(.)\1{2,}")
     return pattern.sub(r"\1\1", text)
 
 data['content'] = data['content'].apply(lambda x: " ".join(de_repeat(x) for x in x.split()))
-# Code to find the top 10,000 rarest words (modify according to your dataset) 
-# appearing in the data
+# Trouver les mots moins fréquent
 freq = pd.Series(' '.join(data['content']).split()).value_counts()[-10000:]
 
-# Removing all those rarely appearing words from the data
+# Supprimer tous les mots moins fréquents
 freq = list(freq.index)
 data['content'] = data['content'].apply(lambda x: " ".join(x for x in x.split() if x not in freq))
 
-#Encoding output labels 'sadness' as '1' & 'happiness' as '0'
+#Encoder la valeurs des variables cible en des "1" et des "0"
 
 lbl_enc = preprocessing.LabelEncoder()
 y = lbl_enc.fit_transform(data.sentiment.values)
@@ -74,13 +74,13 @@ y = lbl_enc.fit_transform(data.sentiment.values)
 
 X_train, X_val, y_train, y_val = train_test_split(data.content.values, y, stratify=y, random_state=42, test_size=0.1, shuffle=True)
 
-# Extracting TF-IDF parameters
+# Extraction des caractéristique TFI-DF
 
 tfidf = TfidfVectorizer(max_features=1000, analyzer='word',ngram_range=(1,3))
 X_train_tfidf = tfidf.fit_transform(X_train)
 X_val_tfidf = tfidf.fit_transform(X_val)
 
-# Extracting Count Vectors Parameters
+# Extracting des parametres Count vector
 
 count_vect = CountVectorizer(analyzer='word')
 count_vect.fit(data['content'])
@@ -171,6 +171,8 @@ rf = RandomForestClassifier(n_estimators=500)
 rf.fit(X_train_count, y_train)
 y_pred = rf.predict(X_val_count)
 print('random forest count vectors accuracy %s' % accuracy_score(y_pred, y_val))
+
+
  # model 5 : XGBOOST
 
 xgb = XGBClassifier()
