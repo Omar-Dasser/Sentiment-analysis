@@ -21,10 +21,8 @@ from keras.utils.np_utils import to_categorical
 data_path = r'C:\Users\OmarDASSER\Desktop\nlp_pro\dataset\text_emotion.csv'
 data = pd.read_csv(data_path)
 
-# print(data)
 data = data.drop('author', axis=1)
 
-#print(data)
 
 data = data.drop(data[data.sentiment == 'anger'].index)
 data = data.drop(data[data.sentiment == 'boredom'].index)
@@ -38,38 +36,34 @@ data = data.drop(data[data.sentiment == 'hate'].index)
 data = data.drop(data[data.sentiment == 'neutral'].index)
 data = data.drop(data[data.sentiment == 'worry'].index)
 
-# print(data)
-#Making all letters lowercase
 data['content'] = data['content'].apply(lambda x: " ".join(x.lower() for x in x.split()))
 
-#Removing Punctuation, Symbols
+
 data['content'] = data['content'].str.replace('[^\w\s]',' ')
 
-#Removing Stop Words using NLTK
+
 
 stop = stopwords.words('english')
 data['content'] = data['content'].apply(lambda x: " ".join(x for x in x.split() if x not in stop))
 
-#Lemmatisation
+
 from textblob import Word
 data['content'] = data['content'].apply(lambda x: " ".join([Word(word).lemmatize() for word in x.split()]))
 
-#Correcting Letter Repetitions
 import re
-def de_repeat(text):
+def del_repeat(text):
     pattern = re.compile(r"(.)\1{2,}")
     return pattern.sub(r"\1\1", text)
 
-data['content'] = data['content'].apply(lambda x: " ".join(de_repeat(x) for x in x.split()))
-# Code to find the top 10,000 rarest words (modify according to your dataset) 
-# appearing in the data
+data['content'] = data['content'].apply(lambda x: " ".join(del_repeat(x) for x in x.split()))
+
 freq = pd.Series(' '.join(data['content']).split()).value_counts()[-10000:]
 
-# Removing all those rarely appearing words from the data
+
 freq = list(freq.index)
 data['content'] = data['content'].apply(lambda x: " ".join(x for x in x.split() if x not in freq))
 
-#Encoding output labels 'sadness' as '1' & 'happiness' as '0'
+
 
 lbl_enc = preprocessing.LabelEncoder()
 y = lbl_enc.fit_transform(data.sentiment.values)
@@ -100,7 +94,7 @@ print(X_test.shape,Y_test.shape)
 
 
 batch_size = 32
-model.fit(X_train, Y_train, nb_epoch = 15, batch_size=batch_size, verbose = 2)
+model.fit(X_train, Y_train, epochs = 15, batch_size=batch_size, verbose = 2)
 
 
 validation_size = 1500
