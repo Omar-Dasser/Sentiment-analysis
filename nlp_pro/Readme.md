@@ -1,22 +1,23 @@
-# Foobar
+# Overview
 
-Foobar is a Python library for dealing with word pluralization.
+The present project has for goal to Analyse sentiments within a large datasets of Tweets, two mainly approaches were followed during this work.
+The first approach, in the subfolder /tutorial, was to follow a Machine Learning paradigm where I used different algorithmes such as XGBoost, SVMs, Logistic regression ...
+And the second approach, in the subfolder /DeepLearning, was to follow a Deep Learning approach where I used a Recurrent neural networks LSTM architecture which proved to be the most 
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the project.
 
 ```bash
-pip install foobar
+pip install -r requirements.txt
 ```
 
 ## Usage
 
-```python
-import foobar
+```bash
 
-foobar.pluralize('word') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
+python tutorial\tutorial.py
+python deeplearning\LSTM.py
+
 ```
 
