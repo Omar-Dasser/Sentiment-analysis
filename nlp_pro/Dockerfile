@@ -7,9 +7,9 @@ RUN apt-get upgrade -y && \
 
 RUN git clone https://github.com/Omar-Dasser/Sentiment-analysis.git
 
-CD Sentiment-analysis/nlp-pro
+RUN CD Sentiment-analysis/nlp-pro
 
-pip install -r requirements.txt
+RUN pip install -r requirements.txt
 
 RUN sudo python -m nltk.downloader all
 
