@@ -1,6 +1,6 @@
 nltk==3.4.4
 pandas==0.24.1
-numpy==1.16.2
+numpy==1.22.0
 xgboost==0.82
 textblob==0.15.3
 Keras==2.2.4
